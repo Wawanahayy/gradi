@@ -7,10 +7,8 @@ from loguru import logger
 # Disable insecure request warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Define URLs
-KEEP_ALIVE_URL = "https://www.aeropres.in/chromeapi/dawn/v1/userreward/keepalive"
+
 GET_POINT_URL = "https://api.gradient.network/api/point/stats"
-LOGIN_URL = "https://www.aeropres.in//chromeapi/dawn/v1/user/login/v2"
 
 # Create a session for requests
 session = requests.Session()
