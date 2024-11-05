@@ -1,14 +1,15 @@
 import json
 import requests
 import datetime
+import time
 import urllib3
 from loguru import logger
 
 # Disable insecure request warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
 GET_POINT_URL = "https://api.gradient.network/api/point/stats"
+PING_URL = "https://api.gradient.network/api/ping"  # Assuming this is the ping endpoint
 
 # Create a session for requests
 session = requests.Session()
@@ -70,6 +71,17 @@ def get_point(token):
     except Exception as e:
         logger.error(f'[x] Failed to get points, error: {e}')
 
+def send_ping(token):
+    HEADERS['authorization'] = "Bearer " + str(token)
+    data = {"action": "PING"}  # Adjust as per actual ping data structure
+    json_data = json.dumps(data)
+    try:
+        response = session.post(PING_URL, data=json_data, headers=HEADERS, verify=False)
+        response.raise_for_status()
+        logger.info(f'[PING] Ping sent successfully: {response.json()}')
+    except Exception as e:
+        logger.error(f'[x] Ping failed, error: {e}')
+
 def main(username, password):
     token = login(username, password)
     if token:
@@ -77,6 +89,8 @@ def main(username, password):
             try:
                 keep_alive(username, token)
                 get_point(token)
+                send_ping(token)  # Send ping at each iteration
+                time.sleep(5 * 60)  # Wait 5 minutes between each cycle
             except KeyboardInterrupt:
                 logger.info("[*] Exiting the script.")
                 break
